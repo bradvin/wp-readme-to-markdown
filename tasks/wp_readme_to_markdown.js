@@ -35,35 +35,41 @@ module.exports = function(grunt) {
 
 		//Convert Headings 
 		grunt.log.debug("Converting headings");
-		readme = readme.replace( new RegExp("^=([^=]+)=*?[\s ]*?\n","gim"),"###$1###\n");	
-		readme = readme.replace( new RegExp("^==([^=]+)==*?[\s ]*?\n","mig"),"##$1##\n");
-		readme = readme.replace( new RegExp("^===([^=]+)===*?[\s ]*?\n","gim"),"#$1#\n");
+
+		readme = readme.replace( /^=([^=]+)=*?[\s ]*?\n/gim, "###$1###\n" );
+		readme = readme.replace( /^==([^=]+)==*?[\s ]*?\n/gim, "##$1##\n" );
+		readme = readme.replace( /^===([^=]+)===*?[\s ]*?\n/gim, "#$1#\n" );		
+		
+		//For some strange reason, which I cannot explain, the below regexes did not work!
+		//readme = readme.replace( new RegExp("^=([^=]+)=*?[\s ]*?\n","gim"),"###$1###\n");
+		//readme = readme.replace( new RegExp("^==([^=]+)==*?[\s ]*?\n","mig"),"##$1##\n");
+		//readme = readme.replace( new RegExp("^===([^=]+)===*?[\s ]*?\n","gim"),"#$1#\n");
 
 		//parse contributors, donate link, etc.
 		grunt.log.debug("Parse contributors, donate link etc");
-		readme = readme.replace( new RegExp("^([^:\n\*]{1}[^:\n#\\]\\[]+): (.+)","gim"),"**$1:** $2  ");
+		readme = readme.replace( /^([^:\n\*]{1}[^:\n#\\]\\[]+): (.+)/gim, "**$1:** $2  ");
 
 		//guess plugin slug from plugin name
 		//@todo Get this from config instead?
 		grunt.log.debug("Get plugin name");
-		var _match =  readme.match( new RegExp("^#([^#]+)#[\s ]*?\n","i") );	
+		var _match =  readme.match( /^#([^#]+)#[\s ]*?\n/i );	
 
 		//process screenshots, if any
 		grunt.log.debug("Get screenshots");
-		var screenshot_match = readme.match( new RegExp("## Screenshots ##([^#]*)","im") );
+		var screenshot_match = readme.match( /## Screenshots ##([^#]*)/im );
 		if ( _match && screenshot_match && screenshot_match.length > 1 ) {
 			
-			var plugin = _match[1].trim().toLowerCase().replace(' ', '-');
+			var plugin = _match[1].trim().toLowerCase().replace(/ /g, '-');
 	
 			//Collect screenshots content	
 			var screenshots = screenshot_match[1];
 
 			//parse screenshot list into array
-			var globalMatch = screenshots.match( new RegExp( "^[0-9]+\. (.*)", "gim") );
+			var globalMatch = screenshots.match( /^[0-9]+\. (.*)/gim );
 
 			var matchArray = [], nonGlobalMatch;
 			for ( var i in globalMatch ) {
-				nonGlobalMatch = globalMatch[i].match(  new RegExp( "^[0-9]+\. (.*)", 'im' ) );
+				nonGlobalMatch = globalMatch[i].match( /^[0-9]+\. (.*)/im );
 				matchArray.push( nonGlobalMatch[1] );
 			}
 		
