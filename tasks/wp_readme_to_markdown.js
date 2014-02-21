@@ -15,6 +15,10 @@ module.exports = function(grunt) {
 
  grunt.registerMultiTask('wp_readme_to_markdown', 'Converts WP readme.txt file to markdown (readme.md)', function() {
  
+	var _plugin_slug = this.options().plugin_slug;
+ 
+	grunt.log.debug( _plugin_slug );
+ 
 	this.files.forEach(function(f) {
 
 		// Concat specified files.
@@ -53,13 +57,12 @@ module.exports = function(grunt) {
 		//@todo Get this from config instead?
 		grunt.log.debug("Get plugin name");
 		var _match =  readme.match( /^#([^#]+)#[\s ]*?\n/i );	
+		var plugin = _plugin_slug || ( _match && _match[1].trim().toLowerCase().replace(/ /g, '-') );
 
 		//process screenshots, if any
 		grunt.log.debug("Get screenshots");
 		var screenshot_match = readme.match( /## Screenshots ##([^#]*)/im );
-		if ( _match && screenshot_match && screenshot_match.length > 1 ) {
-			
-			var plugin = _match[1].trim().toLowerCase().replace(/ /g, '-');
+		if ( plugin && screenshot_match && screenshot_match.length > 1 ) {
 	
 			//Collect screenshots content	
 			var screenshots = screenshot_match[1];
